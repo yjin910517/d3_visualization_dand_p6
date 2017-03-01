@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="lib/d3.v3.min.js"></script>
+  <script src="lib/dimple.v2.0.0.min.js"></script>
+    <script type="text/javascript">
+      function draw(data) {
+      
+      /*
+        D3.js setup code
+      */
+
+          "use strict";
+          var margin = 75,
+              width = 1400 - margin,
+              height = 600 - margin;
+
+
+          var x_min = 110,
+              x_max=140,
+              y_min=18,
+              y_max=36;
+
+
+          var svg = d3.select("body")
+            .append("svg")
+              .attr("width", width + margin)
+              .attr("height", height + margin)
+            .append('g')
+                .attr('class','chart');
+
+      /*
+        Dimple.js Chart construction code
+      */
+
+          var myChart = new dimple.chart(svg, data);
+          var x = myChart.addMeasureAxis("x", "BP"); 
+          var y = myChart.addMeasureAxis("y", "BMI");
+
+          x.overrideMin=x_min;
+          x.overrideMax=x_max;
+          y.overrideMin=y_min;
+          y.overrideMax=y_max;
+
+          myChart.addSeries(['Continent','Country'], dimple.plot.scatter);
+          myChart.draw();
+
+          d3.selectAll('.dimple-africa').attr('fill','#F0027F'); 
+          d3.selectAll('.dimple-asia').attr('fill','#FDC086'); 
+          d3.selectAll('.dimple-oceania').attr('fill','#8DD3C7'); 
+          d3.selectAll('.dimple-europe').attr('fill','#386CB0'); 
+          d3.selectAll('.dimple-north-america').attr('fill','#7FC97F'); 
+          d3.selectAll('.dimple-south-america').attr('fill','#984EA3'); 
+          d3.selectAll('.dimple-bubble').attr('stroke',null).attr('opacity',0.8).attr('r',8);
+
+          d3.select('svg').append('circle').attr('cx',160).attr('cy',80).attr('r',8).attr('fill','#F0027F')
+
+        };
+      </script>
+  </head>
+<body>
+  <script type="text/javascript">
+  /*
+    Use D3 (not dimple.js) to load the TSV file
+    and pass the contents of it to the draw function
+    */
+  d3.csv("female_combined.csv",
+    function(data) {
+      data.forEach(function(d) {
+        d['BMI']=+d['BMI'];
+        d['BP']=+d['BP'];
+        return d;
+      });
+      data=data.filter(function(row) {
+        return row['Year']=='2008';
+      });
+      draw(data);
+    });
+
+
+  /*
+  svg=d3.select('body').append('svg');
+  svg.append('circle').attr('cx',150).attr('cy',75).attr('r',10).attr('fill','red');
+  */
+  </script>
+</body>
+</html>
