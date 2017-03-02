@@ -116,48 +116,56 @@
                 y_min=18,
                 y_max=36;
 
-            var x_scale=d3.scale.linear().domain([x_min,x_max]).range([margin.left,width+margin.left]);
-            var y_scale=d3.scale.linear().domain([y_max,y_min]).range([margin.top,height+margin.top]);
+            var x_scale=d3.scale
+                          .linear()
+                          .domain([x_min,x_max])
+                          .range([margin.left,width+margin.left]);
+            var y_scale=d3.scale
+                          .linear()
+                          .domain([y_max,y_min])
+                          .range([margin.top,height+margin.top]);
 
             /* Clean data and assign color to each continent */
             continent_color={'Asia':'#FDC086','Africa':'#F0027F','Oceania':'#8DD3C7',
                               'Europe':'#386CB0','North America':'#7FC97F','South America':'#984EA3'};
 
             data.forEach(function(d) {
-                d['BMI']=+d['BMI'];
-                d['BP']=+d['BP'];
-                d['x']=x_scale(d['BP']);
-                d['y']=y_scale(d['BMI']);
-                d['color']=continent_color[d.Continent];
-                return d;
+                  d['BMI']=+d['BMI'];
+                  d['BP']=+d['BP'];
+                  d['x']=x_scale(d['BP']);
+                  d['y']=y_scale(d['BMI']);
+                  d['color']=continent_color[d.Continent];
+                  return d;
               });
 
 
             /* Set up empty svg */
             var svg = d3.select("body")
-              .append("svg")
-                .attr("width", width + margin.left+margin.right)
-                .attr("height", height + margin.top+margin.bottom)
-              .append('g')
-                  .attr('class','chart');
+                        .append("svg")
+                            .attr("width", width + margin.left+margin.right)
+                            .attr("height", height + margin.top+margin.bottom)
+                        .append('g')
+                            .attr('class','chart');
 
             /* Create tooltip object */
             var tip = d3.tip()
                         .attr('class', 'd3-tip')
                         .offset([-10, 0])
                         .html(function(d) {
-                          return "Country: " + d.Country + "<br>" + "BMI: " + d.BMI + "<br>" + "BP: " + d.BP ;
+                            return "Country: " + d.Country + "<br>" 
+                                    + "BMI: " + d.BMI + "<br>" 
+                                    + "BP: " + d.BP ;
                         });
 
             svg.call(tip);
 
             /* Create axis */
             var x_axis = d3.svg.axis()
-              .scale(x_scale);
+                .scale(x_scale);
 
             var y_axis = d3.svg.axis()
-              .scale(y_scale)
-              .orient("left");
+                .scale(y_scale)
+                .orient("left");
 
             d3.select("svg")
               .append("g")
@@ -167,8 +175,8 @@
 
             d3.select("svg")
               .append("g")
-              .attr("class", "y axis")
-              .attr("transform", "translate(" + margin.left + ",0)")
+                  .attr("class", "y axis")
+                  .attr("transform", "translate(" + margin.left + ",0)")
               .call(y_axis);
 
             svg.append("text")
@@ -194,26 +202,26 @@
             var selected_y=document.getElementById("year_select");
             var selected_year = selected_y.options[selected_y.selectedIndex].value;
 
-            /* reshape continent color collection for legend drawing */
-            var legend_color=[];
-            for (var key in continent_color) {
-              var value = continent_color[key];
-              var pair={'Continent':key,"Color": value};
-              legend_color.push(pair);
-            }
-
             /* filter data by continent */
             if (selected_continent=="All") {
-              var continent_data = data;
+                var continent_data = data;
             }
 
             else {
-              var continent_data = data.filter(function(d) {
-                return d['Continent']==selected_continent;
-              });
-              legend_color=legend_color.filter(function(d){
-                return d.Continent == selected_continent;
-              });
+                var continent_data = data.filter(function(d) {
+                    return d['Continent']==selected_continent;
+                });
+                legend_color=legend_color.filter(function(d){
+                    return d.Continent == selected_continent;
+                });
+            }
+
+            /* reshape continent color collection for legend drawing */
+            var legend_color=[];
+            for (var key in continent_color) {
+                var value = continent_color[key];
+                var pair={'Continent':key,"Color": value};
+                legend_color.push(pair);
             }
 
             /* Create legend at upper left corner */
@@ -232,14 +240,14 @@
                         });
 
             legend.append('circle')
-                .attr('r',8)
-                .attr('fill', function(d){return d.Color;})
-                .style('stroke', null);
+                  .attr('r',8)
+                  .attr('fill', function(d){return d.Color;})
+                  .style('stroke', null);
 
             legend.append('text')
-                .attr('x', 15)
-                .attr('y', 5)
-                .text(function(d) { return d.Continent; });
+                  .attr('x', 15)
+                  .attr('y', 5)
+                  .text(function(d) { return d.Continent; });
 
             /* Add Source note */
             svg.append('text')
@@ -257,58 +265,68 @@
 
 
             function plot_points(continent_data) {
+
                 svg.selectAll('.data-circle').remove();
 
                 /* plot single year chart with update_year() */
                 function update_year(year) {
+
                     var filtered = continent_data.filter(function(d) {
-                        return d['Year']==year;
-                      });
+                          return d['Year']==year;
+                        });
 
                     /* plot two abs lines as average BMI and BP */
                     var bmi_avg = d3.sum(filtered, function(d){
-                      return d.BMI; 
-                    }) / filtered.length;
+                          return d.BMI; 
+                        }) / filtered.length;
                     var bp_avg = d3.sum(filtered, function(d){
-                      return d.BP; 
-                    }) / filtered.length;
+                          return d.BP; 
+                        }) / filtered.length;
 
                     svg.selectAll('.avg_label').remove();
-                    svg.append('text')
-                    .text('Average BMI: '+Math.round(bmi_avg*100)/100)
-                    .attr('class','avg_label')
-                    .attr('x',margin.left+5)
-                    .attr('y',y_scale(bmi_avg)+15)
-                    .attr('font-size','12px');
 
                     svg.append('text')
-                    .text('Average BP: '+Math.round(bp_avg*100)/100)
-                    .attr('class','avg_label')
-                    .attr('y',margin.top+10)
-                    .attr('x',x_scale(bp_avg)+5)
-                    .attr('font-size','12px');
+                       .text('Average BMI: '+Math.round(bmi_avg*100)/100)
+                       .attr('class','avg_label')
+                       .attr('x',margin.left+5)
+                       .attr('y',y_scale(bmi_avg)+15)
+                       .attr('font-size','12px');
+
+                    svg.append('text')
+                       .text('Average BP: '+Math.round(bp_avg*100)/100)
+                       .attr('class','avg_label')
+                       .attr('y',margin.top+10)
+                       .attr('x',x_scale(bp_avg)+5)
+                       .attr('font-size','12px');
+
                     svg.selectAll('.avg_line').remove();
 
                     svg.append("line")
-                    .attr('class','avg_line')
-                    .attr("x1", x_scale(bp_avg))
-                    .attr("y1", y_scale(y_max))
-                    .attr("x2", x_scale(bp_avg))
-                    .attr("y2", y_scale(y_min))
-                    .style("stroke-width", 1).style("stroke", "#888888").style("fill", "none");
+                       .attr('class','avg_line')
+                       .attr("x1", x_scale(bp_avg))
+                       .attr("y1", y_scale(y_max))
+                       .attr("x2", x_scale(bp_avg))
+                       .attr("y2", y_scale(y_min))
+                       .style("stroke-width", 1)
+                       .style("stroke", "#888888")
+                       .style("fill", "none");
 
                     svg.append("line")
-                    .attr('class','avg_line')
-                    .attr("x1", x_scale(x_max))
-                    .attr("y1", y_scale(bmi_avg))
-                    .attr("x2", x_scale(x_min))
-                    .attr("y2", y_scale(bmi_avg))
-                    .style("stroke-width", 1).style("stroke", "#888888").style("fill", "none");
+                       .attr('class','avg_line')
+                       .attr("x1", x_scale(x_max))
+                       .attr("y1", y_scale(bmi_avg))
+                       .attr("x2", x_scale(x_min))
+                       .attr("y2", y_scale(bmi_avg))
+                       .style("stroke-width", 1)
+                       .style("stroke", "#888888")
+                       .style("fill", "none");
 
 
                     /* Plot circles */
                     var circles = svg.selectAll('.data-circle')
-                            .data(filtered,function(d){return d.Country + d.Year;});
+                                     .data(filtered,function(d){
+                                         return d.Country + d.Year;
+                                     });
 
                     circles.exit().remove();
 
@@ -336,7 +354,8 @@
                                   clearInterval(year_interval);
                             }
                         },500);
-                  }
+                }
+
                 else {
                   update_year(selected_year.toString());
                   d3.select('.subtitle').text('Year '+ year.toString());
@@ -434,9 +453,23 @@
       <button type="button" onclick="show_selected()" >Play</button>
   </div>
   <script type="text/javascript">
-      d3.select('body').append('div').attr('class','main-title').append('h2').text('Male Body Mass Index & Blood Pressure by Country');
-      d3.select('body').append('div').attr('class','description').append('div').append('img').attr('src','logo/male.png');
-      d3.select('.description').append('div').append('p').text('In general, male people around the world were gradually getting fatter since 1980. The average blood pressure decreased from 1980 to 2000 but started to bounce back up after 2000. The pattern of each continent is significantly different from each other. For example, Oceania males had the greatest BMI increase, while BMI of European males remain relatively constant. Other patterns are waiting for your exploration. (Hover over points to see detail stats.)');
+      d3.select('body')
+        .append('div')
+          .attr('class','main-title')
+        .append('h2')
+          .text('Male Body Mass Index & Blood Pressure by Country');
+
+      d3.select('body')
+      .append('div')
+        .attr('class','description')
+      .append('div').append('img')
+        .attr('src','logo/male.png');
+
+      d3.select('.description')
+        .append('div')
+        .append('p')
+          .text('In general, male people around the world were gradually getting fatter since 1980. The average blood pressure decreased from 1980 to 2000 but started to bounce back up after 2000. The pattern of each continent is significantly different from each other. For example, Oceania males had the greatest BMI increase, while BMI of European males remain relatively constant. Other patterns are waiting for your exploration. (Hover over points to see detail stats.)');
+          
       d3.csv("male_combined.csv",draw);
 
   </script>

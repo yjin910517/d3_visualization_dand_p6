@@ -1,5 +1,5 @@
 ### Project Description:
-An interactive chart of BMI and blood pressure by gender by country. This project was built with D3. This is the 6th project of Udacity data analyst nano degree.
+An interactive chart of BMI and blood pressure by gender and country. This project was built with D3. This is the 6th project of Udacity data analyst nano degree.
 
 ### Final Folders and Files:
 - lib: documents of javascript libraries
